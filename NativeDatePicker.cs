@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace NativeDialogs
@@ -15,9 +16,8 @@ namespace NativeDialogs
         private static readonly AndroidJavaObject JavaInstance;
 
 #elif UNITY_IOS
-        [DllImport ("__Internal")] 
-    
-        private static extern string IOS_Speak();
+        [DllImport ("__Internal")]    
+        private static extern string NativeDatePicker_speak();
 #endif
 
         public class DatePickerOptions
@@ -66,10 +66,10 @@ namespace NativeDialogs
 
         public static string SanityTest()
         {
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !UNITY_EDITOR
             return JavaInstance.Call<string>("speak");
-#elif UNITY_IOS
-            return IOS_Speak();
+#elif UNITY_IOS && !UNITY_EDITOR
+            return NativeDatePicker_speak();
 #else
             return "Not supported";
 #endif
@@ -87,7 +87,7 @@ namespace NativeDialogs
             opts.Spinner
             });
 #else
-        Debug.Log("This platform is not supported")
+            Debug.Log("This platform is not supported");
 #endif
         }
 

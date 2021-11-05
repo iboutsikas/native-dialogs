@@ -33,14 +33,24 @@ static NativeDatePicker* _instance;
 {
     NSString* str = @"Hello from the iOS side of the moon";
     NSLog(str);
-    return [str UTF8String];
+    return (char*)[str UTF8String];
 }
 @end
 
+// Helper method to create C string copy
+char* MakeStringCopy (const char* string)
+{
+	if (string == NULL)
+		return NULL;
+	
+	char* res = (char*)malloc(strlen(string) + 1);
+	strcpy(res, string);
+	return res;
+}
 
 extern "C"
 {
-    char* speak() {
-        return [[NativeDatePicker sharedInstance] getGreeting];
+    char* NativeDatePicker_speak() {
+        return MakeStringCopy([[NativeDatePicker sharedInstance] getGreeting]);
     }
 }
