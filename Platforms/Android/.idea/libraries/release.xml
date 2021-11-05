@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="release">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/source~/NativeDialogs/build/intermediates/merged_java_res/release/feature-NativeDialogs.jar!/" />
+      <root url="jar://$PROJECT_DIR$/source~/NativeDialogs/build/intermediates/merged_java_res/release/feature-app.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

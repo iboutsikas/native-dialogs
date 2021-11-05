@@ -1,0 +1,14 @@
+{
+    "name": "me.iboutsikas.NativeDialogs",
+    "rootNamespace": "NativeDialogs",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
