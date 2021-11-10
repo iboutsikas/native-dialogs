@@ -63,10 +63,6 @@ namespace NativeDialogs
             public DateTimeOffset SelectedDate = DateTimeOffset.Now;
             public bool Spinner = true;
 
-#if UNITY_IOS
-            public Rect DatePickerRect;
-#endif
-
             public Action<DateTimeOffset> Callback = null;
 
 
@@ -128,14 +124,6 @@ namespace NativeDialogs
             dateString,
             opts.Spinner
             });
-#elif UNITY_IOS
-            _TAG_NativeDatePicker_initialize(
-                opts.DatePickerRect.position.x,
-                opts.DatePickerRect.position.y,
-                opts.DatePickerRect.width,
-                opts.DatePickerRect.height
-                );
-#else
             Debug.Log("This platform is not supported");
 #endif
         }
