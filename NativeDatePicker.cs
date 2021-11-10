@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using AOT;
 using UnityEngine;
 
 namespace NativeDialogs
@@ -9,21 +10,62 @@ namespace NativeDialogs
     public static class NativeDatePicker
     {
         private static readonly Destructor Finalize = new Destructor();
-        private static readonly string DateTimeFormat = "yyyy-MM-ddTHH:mm:sszzzz";
 
 #if UNITY_ANDROID
+        private static readonly string DateTimeFormat = "yyyy-MM-ddTHH:mm:sszzzz";
+
         private static readonly string pluginName = "me.iboutsikas.nativedialogs.NativeDatePicker";
         private static readonly AndroidJavaObject JavaInstance;
 
 #elif UNITY_IOS
+        private static Action<DateTimeOffset> CurrentCallback;
+
         [DllImport ("__Internal")]    
-        private static extern string NativeDatePicker_speak();
+        private static extern string _TAG_NativeDatePicker_getGreeting();
+
+        [DllImport("__Internal")]
+        private static extern string _TAG_NativeDatePicker_initialize(
+            float x,
+            float y,
+            float width,
+            float height);
+
+        [DllImport("__Internal")]
+        private static extern string _TAG_NativeDatePicker_setPosition(
+            float x,
+            float y,
+            float width,
+            float height);
+
+        [DllImport("__Internal")]
+        private static extern void _TAG_NativeDatePicker_popover(DatepickerDelegate callback);
+
+        private delegate void DatepickerDelegate(string dateString);
+
+        [MonoPInvokeCallback(typeof(DatepickerDelegate))]
+        private static void delegateMessageReceived(string dateString)
+        {
+            Debug.Log($"Datestring received: {dateString}");
+            if (DateTimeOffset.TryParse(dateString, out var date))
+            {
+                CurrentCallback?.Invoke(date.ToLocalTime());
+            }
+            else
+            {
+                Debug.Log("Failed to parse datestring");
+            }    
+        }
+
 #endif
 
         public class DatePickerOptions
         {
             public DateTimeOffset SelectedDate = DateTimeOffset.Now;
             public bool Spinner = true;
+
+#if UNITY_IOS
+            public Rect DatePickerRect;
+#endif
 
             public Action<DateTimeOffset> Callback = null;
 
@@ -69,7 +111,7 @@ namespace NativeDialogs
 #if UNITY_ANDROID && !UNITY_EDITOR
             return JavaInstance.Call<string>("speak");
 #elif UNITY_IOS && !UNITY_EDITOR
-            return NativeDatePicker_speak();
+            return _TAG_NativeDatePicker_getGreeting();
 #else
             return "Not supported";
 #endif
@@ -86,8 +128,37 @@ namespace NativeDialogs
             dateString,
             opts.Spinner
             });
+#elif UNITY_IOS
+            _TAG_NativeDatePicker_initialize(
+                opts.DatePickerRect.position.x,
+                opts.DatePickerRect.position.y,
+                opts.DatePickerRect.width,
+                opts.DatePickerRect.height
+                );
 #else
             Debug.Log("This platform is not supported");
+#endif
+        }
+
+        public static void SetPosition(Rect rect)
+        {
+            _TAG_NativeDatePicker_setPosition(
+                rect.position.x,
+                rect.position.y,
+                rect.width,
+                rect.height
+                );
+        }
+
+        public static void ShowModalDatepicker(DatePickerOptions opts)
+        {
+#if UNITY_ANDROID
+            ShowDatePicker(opts);
+#elif UNITY_IOS
+            CurrentCallback = opts.Callback;
+            _TAG_NativeDatePicker_popover(delegateMessageReceived);
+#else
+        Debug.Log("This platform is not supported");
 #endif
         }
 
