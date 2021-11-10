@@ -1,6 +1,7 @@
-#import "PopoverDatepickerController.h"
+#import "NDPopoverDatepicker.h"
 #import "DatepickerDelegate.h"
-@implementation PopoverDatepickerController
+
+@implementation NDPopoverDatepicker
 
 NSString * defaultTitle = @"Select date for data";
 
@@ -93,9 +94,9 @@ NSString * defaultTitle = @"Select date for data";
 -(void)onTapDone:(UIBarButtonItem*)item{
     [self dismissViewControllerAnimated:YES completion:nil];
     
-    if (self.callbackTarget != nil && [self.callbackTarget conformsToProtocol:@protocol(DatePickerDelegate)])
+    if (self.callbackTarget != nil && [self.callbackTarget conformsToProtocol:@protocol(NDDatepickerDelegate)])
     {
-        [self.callbackTarget newDateAvailable:self->fuckingDate];
+        [self.callbackTarget newDateAvailable:self.date];
     }
 }
 
@@ -105,6 +106,22 @@ NSString * defaultTitle = @"Select date for data";
 
 -(void) dateChanged:(UIDatePicker*) picker
 {
-    self->fuckingDate = picker.date;
+    self.date = picker.date;
+}
+
+- (void) selectDate:(NSDate *)date
+{
+    self.date = date;
+    if (self->datepicker != nil)
+        self->datepicker.date = date;
+}
+
+- (void) present:(UIViewController*) controller
+{
+    auto frame = controller.view.frame;
+    
+    self.popoverPresentationController.sourceView = controller.view;
+    self.popoverPresentationController.sourceRect = CGRectMake(frame.size.width / 2, frame.size.height /2 , 0, 0);
+    [controller presentViewController:self animated:YES completion:nil];
 }
 @end

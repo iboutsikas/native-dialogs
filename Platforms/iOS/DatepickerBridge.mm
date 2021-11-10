@@ -1,11 +1,11 @@
-#import "NativeDatePicker.h"
-#import "PopoverDatepickerController.h"
+#import "DatepickerBridge.h"
+#import "NDPopoverDatepicker.h"
 #import "DataConvert.h"
 
 DateCallbackFunction __CSharp_Delegate = NULL;
 
-@implementation NativeDatePicker
-static NativeDatePicker* _instance;
+@implementation NDDatepickerBridge
+static NDDatepickerBridge* _instance;
 
 -(id) init
 {
@@ -23,29 +23,20 @@ static NativeDatePicker* _instance;
     return view.contentScaleFactor;
 }
 
-+(NativeDatePicker*) sharedInstance
++(NDDatepickerBridge*) sharedInstance
 {
     static dispatch_once_t dispatchToken;
 
     dispatch_once(&dispatchToken, ^{
         NSLog(@"Creating native iOS singleton");
 
-        _instance = [[NativeDatePicker alloc] init];
+        _instance = [[NDDatepickerBridge alloc] init];
     });
 
     return _instance;
 }
 
-
-
--(NSString*) getGreeting
-{
-    NSString* str = @"Hello from the iOS side of the moon";
-    NSLog(@"%@", str);
-    return str;
-}
-
--(void) initializeDatePicker:(float) x y: (float) y width: (float) width height: (float) height
+-(void) makeInline:(float) x y: (float) y width: (float) width height: (float) height
 {
 
     if (self->datePicker == nil)
@@ -80,18 +71,18 @@ static NativeDatePicker* _instance;
     [self->datePicker setFrame: frame];
 }
 
--(void) showPopoverDatePicker
+-(void) showPopover
 {
     auto unityView = UnityGetGLView();
     auto unityFrame = unityView.frame;
     
     if (self->popoverController == nil)
     {
-        self->popoverController = [[PopoverDatepickerController alloc] init];
+        self->popoverController = [[NDPopoverDatepicker alloc] init];
         self->popoverController.callbackTarget = self;
     }
     
-//    self->popoverController.dateSetCallback = &dateCallback;
+    
     UIPopoverPresentationController* ctr = self->popoverController.popoverPresentationController;
     
     ctr.sourceView = unityView;
@@ -112,21 +103,21 @@ static NativeDatePicker* _instance;
 
 extern "C"
 {
-char* _TAG_NativeDatePicker_getGreeting() {
-    return MakeStringCopy([[NativeDatePicker sharedInstance] getGreeting]);
-}
-
-void _TAG_NativeDatePicker_initialize(float x_, float y_, float width_, float height_) {
-    [[NativeDatePicker sharedInstance] initializeDatePicker: x_ y: y_ width: width_ height: height_];
-}
-
-void _TAG_NativeDatePicker_setPosition(float x, float y, float width, float height) {
-    [[NativeDatePicker sharedInstance] setPosition: x y:y width:width height:height];
-}
-
-void _TAG_NativeDatePicker_popover(DateCallbackFunction callback) {
+void __ND__DatePicker_initialize(DateCallbackFunction callback){
     __CSharp_Delegate = callback;
-    [[NativeDatePicker sharedInstance] showPopoverDatePicker];
+}
+
+void __ND__DatePicker_makeInline(float x_, float y_, float width_, float height_) {
+    [[NDDatepickerBridge sharedInstance] makeInline: x_ y: y_ width: width_ height: height_];
+}
+
+void __ND__DatePicker_setPosition(float x, float y, float width, float height) {
+    [[NDDatepickerBridge sharedInstance] setPosition: x y:y width:width height:height];
+}
+
+void __ND__DatePicker_popover() {
+    
+    [[NDDatepickerBridge sharedInstance] showPopover];
 }
 
 }
