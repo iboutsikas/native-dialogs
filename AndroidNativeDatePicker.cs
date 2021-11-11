@@ -3,10 +3,9 @@ using UnityEngine;
 
 namespace NativeDialogs
 {
-#if UNITY_ANDROID && !UNITY_EDITOR
+//#if UNITY_ANDROID && !UNITY_EDITOR
     internal class AndroidNativeDatePicker : IDatePicker
     {
-        private static readonly string DateTimeFormat = "yyyy-MM-ddTHH:mm:sszzzz";
         private static readonly string pluginName = "me.iboutsikas.nativedialogs.NativeDatePicker";
 
         private readonly AndroidJavaObject JavaInstance;
@@ -27,12 +26,12 @@ namespace NativeDialogs
 
         public void ShowModal(DatePickerOptions options)
         {
-            var dateString = options.SelectedDate.ToString(DateTimeFormat);
+            var seconds = options.SelectedDate.ToUnixTimeSeconds();
 
             JavaInstance.Call("showDatePicker", new object[]
             {
             new DatePickerCallback(options.Callback),
-            dateString,
+            seconds,
             options.Spinner
             });
         }
@@ -49,20 +48,15 @@ namespace NativeDialogs
                 this.callback = callback;
             }
 
-            public void onDateSet(string dateString)
+            public void onDateSet(long dateUTC)
             {
-                if (DateTimeOffset.TryParse(dateString, out var date))
-                {
-                    if (callback != null)
-                        callback.Invoke(date);
-                }
-                else
-                {
-                    Debug.Log($"Failed to parse {dateString} from Java.");
-                }
+                var date = DateTimeOffset.FromUnixTimeSeconds(dateUTC);
+
+                if (callback != null)
+                    callback.Invoke(date.ToLocalTime());
 
             }
         }
     }
-#endif
+//#endif
 }

@@ -8,6 +8,7 @@ import com.unity3d.player.UnityPlayer;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -16,31 +17,13 @@ import java.util.Locale;
 public class NativeDatePicker {
 
     public interface NativeDatePickerCallback {
-        void onDateSet(String dateString);
+        void onDateSet(long dateUTC);
     }
 
     private static final NativeDatePicker s_Instance = new NativeDatePicker();
     private static final String LOGTAG = "NativeDatePicker";
 
-    private static final String DefaultDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
-    private static final SimpleDateFormat SDF = new SimpleDateFormat(DefaultDateFormat, Locale.getDefault());
-
     public static NativeDatePicker getInstance() { return s_Instance; }
-
-    private static Date parseDate(String dateString)
-    {
-        if (dateString == null)
-            return new Date();
-
-        try {
-            return SDF.parse(dateString);
-        }
-
-        catch (ParseException e) {
-            e.printStackTrace();
-            return new Date();
-        }
-    }
 
     private DatePickerDialog dialog;
 
@@ -49,12 +32,10 @@ public class NativeDatePicker {
     }
 
 
-    public void showDatePicker(final NativeDatePickerCallback callback, String dateString, boolean isSpinner) {
-
-        Date date = parseDate(dateString);
+    public void showDatePicker(final NativeDatePickerCallback callback, long dateUTC, boolean isSpinner) {
 
         Calendar calendar = new GregorianCalendar();
-        calendar.setTime(date);
+        calendar.setTimeInMillis(dateUTC * 1000);
 
         if (dialog != null)
             dialog.dismiss();
@@ -76,10 +57,7 @@ public class NativeDatePicker {
                 cal.set(Calendar.MONTH, month);
                 cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-                Date d = cal.getTime();
-                String str = SDF.format(d);
-
-                callback.onDateSet(str);
+                callback.onDateSet(cal.getTimeInMillis() / 1000);
             }
         });
 
