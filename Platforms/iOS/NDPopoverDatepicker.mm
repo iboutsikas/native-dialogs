@@ -137,10 +137,15 @@ NSString * defaultTitle = @"Select date for data";
 
 - (void) present:(UIViewController*) controller
 {
+    
+    if (self.isBeingPresented)
+        return;
+    
     auto frame = controller.view.frame;
     
     self->dirty = NO;
     
+    self.popoverPresentationController.permittedArrowDirections = 0;
     self.popoverPresentationController.sourceView = controller.view;
     self.popoverPresentationController.sourceRect = CGRectMake(frame.size.width / 2, frame.size.height /2 , 0, 0);
     [controller presentViewController:self animated:YES completion:nil];

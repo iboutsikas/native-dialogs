@@ -97,7 +97,7 @@ extern "C"
 {
 void __ND__DatePicker_initialize(DateCallbackFunction callback){
     __CSharp_Delegate = callback;
-    (void*) [NDDatepickerBridge sharedInstance];
+    [NDDatepickerBridge sharedInstance];
 }
 
 void __ND__DatePicker_makeInline(float x_, float y_, float width_, float height_) {
