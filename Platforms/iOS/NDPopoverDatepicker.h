@@ -6,7 +6,7 @@
     UILabel* titleLabel;
     UIDatePicker* datepicker;
     UIStackView* topBar;
-    NSDate* lastSelectedDate;
+    BOOL dirty;
 }
 @property() NSDate* date;
 @property(weak) id<NDDatepickerDelegate> callbackTarget;

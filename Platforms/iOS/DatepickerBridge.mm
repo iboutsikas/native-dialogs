@@ -71,31 +71,23 @@ static NDDatepickerBridge* _instance;
     [self->datePicker setFrame: frame];
 }
 
--(void) showPopover
+-(void) showPopover: (NSDate*) date
 {
-    auto unityView = UnityGetGLView();
-    auto unityFrame = unityView.frame;
-    
     if (self->popoverController == nil)
     {
         self->popoverController = [[NDPopoverDatepicker alloc] init];
         self->popoverController.callbackTarget = self;
     }
     
+    [self->popoverController setDate:date];
     
-    UIPopoverPresentationController* ctr = self->popoverController.popoverPresentationController;
-    
-    ctr.sourceView = unityView;
-    ctr.sourceRect = CGRectMake(unityFrame.size.width / 2, unityFrame.size.height /2 , 0, 0);
-    [UnityGetGLViewController() presentViewController:self->popoverController animated:YES completion:nil];
+    [self->popoverController present:UnityGetGLViewController()];
 }
 
 - (void) newDateAvailable:(NSDate*)date
 {
     if (__CSharp_Delegate != NULL){
-        auto formatter = [[NSISO8601DateFormatter alloc] init];
-        auto string = [formatter stringFromDate:date];
-        __CSharp_Delegate(MakeStringCopy(string));
+        __CSharp_Delegate((long)[date timeIntervalSince1970]);
     }
 }
 
@@ -105,6 +97,7 @@ extern "C"
 {
 void __ND__DatePicker_initialize(DateCallbackFunction callback){
     __CSharp_Delegate = callback;
+    (void*) [NDDatepickerBridge sharedInstance];
 }
 
 void __ND__DatePicker_makeInline(float x_, float y_, float width_, float height_) {
@@ -115,9 +108,9 @@ void __ND__DatePicker_setPosition(float x, float y, float width, float height) {
     [[NDDatepickerBridge sharedInstance] setPosition: x y:y width:width height:height];
 }
 
-void __ND__DatePicker_popover() {
-    
-    [[NDDatepickerBridge sharedInstance] showPopover];
+void __ND__DatePicker_popover(long dateUTC) {
+    NSDate* date = dateUTC >= 0 ? [NSDate dateWithTimeIntervalSince1970:dateUTC] : [NSDate date];
+    [[NDDatepickerBridge sharedInstance] showPopover: date];
 }
 
 }

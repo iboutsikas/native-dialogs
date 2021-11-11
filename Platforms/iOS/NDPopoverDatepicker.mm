@@ -9,8 +9,7 @@ NSString * defaultTitle = @"Select date for data";
 -(id) init
 {
     self = [super init];
-    title = defaultTitle;
-    lastSelectedDate = nil;
+    self->title = defaultTitle;
     [self initHelper];
     
     return self;
@@ -19,7 +18,7 @@ NSString * defaultTitle = @"Select date for data";
 -(id) initWithTitle:(NSString*) title_
 {
     self = [super init];
-    title = title_;
+    self->title = title_;
     [self initHelper];
     
     return self;
@@ -74,6 +73,26 @@ NSString * defaultTitle = @"Select date for data";
     
     [self.view addSubview:topBar];
     [self.view addSubview:datepicker];
+    
+    self.presentationController.delegate = self;
+    
+    dirty = NO;
+}
+
+- (void) presentationControllerDidDismiss: (UIPresentationController*) controller
+{
+    if (self->dirty)
+    {
+        [self notifyDelegate];
+    }
+}
+
+- (void) notifyDelegate
+{
+    if (self.callbackTarget != nil && [self.callbackTarget conformsToProtocol:@protocol(NDDatepickerDelegate)])
+    {
+        [self.callbackTarget newDateAvailable:self.date];
+    }
 }
 
 -(void) viewWillLayoutSubviews
@@ -92,12 +111,11 @@ NSString * defaultTitle = @"Select date for data";
 }
 
 -(void)onTapDone:(UIBarButtonItem*)item{
+    
     [self dismissViewControllerAnimated:YES completion:nil];
     
-    if (self.callbackTarget != nil && [self.callbackTarget conformsToProtocol:@protocol(NDDatepickerDelegate)])
-    {
-        [self.callbackTarget newDateAvailable:self.date];
-    }
+    if (self->dirty)
+        [self notifyDelegate];
 }
 
 -(void)onTapCancel:(UIBarButtonItem*)item{
@@ -106,6 +124,7 @@ NSString * defaultTitle = @"Select date for data";
 
 -(void) dateChanged:(UIDatePicker*) picker
 {
+    self->dirty = YES;
     self.date = picker.date;
 }
 
@@ -119,6 +138,8 @@ NSString * defaultTitle = @"Select date for data";
 - (void) present:(UIViewController*) controller
 {
     auto frame = controller.view.frame;
+    
+    self->dirty = NO;
     
     self.popoverPresentationController.sourceView = controller.view;
     self.popoverPresentationController.sourceRect = CGRectMake(frame.size.width / 2, frame.size.height /2 , 0, 0);

@@ -12,7 +12,7 @@
 
 -(void) makeInline:(float) x y: (float) y width: (float) width height: (float) height;
 -(void) setPosition:(float) x y: (float) y width: (float) width height: (float) height;
--(void) showPopover;
+-(void) showPopover:(NSDate*)date;
 -(void) newDateAvailable:(NSString*)date;
 @end
-typedef void (*DateCallbackFunction)(char* dateString);
+typedef void (*DateCallbackFunction)(long dateUTC);
