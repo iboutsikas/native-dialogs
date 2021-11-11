@@ -6,13 +6,8 @@ import android.widget.DatePicker;
 
 import com.unity3d.player.UnityPlayer;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 
 public class NativeDatePicker {
 
@@ -31,7 +26,7 @@ public class NativeDatePicker {
 
     }
 
-
+    @SuppressWarnings("unused")
     public void showDatePicker(final NativeDatePickerCallback callback, long dateUTC, boolean isSpinner) {
 
         Calendar calendar = new GregorianCalendar();
@@ -62,10 +57,5 @@ public class NativeDatePicker {
         });
 
         dialog.show();
-    }
-
-    public String speak() {
-        Log.i(LOGTAG, "Hi from the Java side.");
-        return "Hi from the Java side.";
     }
 }
