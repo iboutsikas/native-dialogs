@@ -64,9 +64,16 @@ NSString * defaultTitle = @"Select date for data";
     
     datepicker = [[UIDatePicker alloc] initWithFrame:CGRectZero];
     datepicker.datePickerMode = UIDatePickerModeDate;
+    
+    // Apparently we need to set the wheels style first and THEN change the color.
+    // Otherwise the color change will be overriden on platforms that support preferedDatePickerStyle
     if (@available(iOS 13.4, *)) {
         datepicker.preferredDatePickerStyle = UIDatePickerStyleWheels;
     }
+    
+    [datepicker setValue:[UIColor purpleColor] forKeyPath:@"textColor"];
+    datepicker.backgroundColor = [UIColor systemOrangeColor];
+    [datepicker setValue:[NSNumber numberWithBool:NO] forKeyPath:@"highlightsToday"];
     
     [datepicker addTarget:self action:@selector(dateChanged:)
          forControlEvents:UIControlEventValueChanged];
@@ -105,9 +112,13 @@ NSString * defaultTitle = @"Select date for data";
                                            context:nil];
     topBar.frame = CGRectMake(0, 0, f.size.width, labelSize.size.height + 20);
     
-    titleLabel.frame = CGRectMake(0, 0, labelSize.size.width, labelSize.size.height);
+//    titleLabel.frame = CGRectMake(0, 0, labelSize.size.width, labelSize.size.height);
     
-    datepicker.frame = CGRectMake(0, (f.size.height / 2) - 100, f.size.width, 200);
+    auto centeredY = (f.size.height / 2) - 100;
+    
+    auto actualY = (topBar.frame.size.height > centeredY) ? topBar.frame.size.height : centeredY;
+    
+    datepicker.frame = CGRectMake(0, actualY, f.size.width, 200);
 }
 
 -(void)onTapDone:(UIBarButtonItem*)item{
