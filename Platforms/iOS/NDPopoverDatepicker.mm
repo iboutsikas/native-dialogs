@@ -71,9 +71,9 @@ NSString * defaultTitle = @"Select date for data";
         datepicker.preferredDatePickerStyle = UIDatePickerStyleWheels;
     }
     
-    [datepicker setValue:[UIColor purpleColor] forKeyPath:@"textColor"];
-    datepicker.backgroundColor = [UIColor systemOrangeColor];
-    [datepicker setValue:[NSNumber numberWithBool:NO] forKeyPath:@"highlightsToday"];
+    // [datepicker setValue:[UIColor purpleColor] forKeyPath:@"textColor"];
+    // datepicker.backgroundColor = [UIColor systemOrangeColor];
+    // [datepicker setValue:[NSNumber numberWithBool:NO] forKeyPath:@"highlightsToday"];
     
     [datepicker addTarget:self action:@selector(dateChanged:)
          forControlEvents:UIControlEventValueChanged];
