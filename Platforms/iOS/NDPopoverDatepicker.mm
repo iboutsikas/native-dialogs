@@ -31,7 +31,12 @@ NSString * defaultTitle = @"Select date for data";
     // Turns off all arrows
     self.popoverPresentationController.permittedArrowDirections = 0;
     
-    self.view.backgroundColor = [UIColor whiteColor];
+    if (@available(iOS 13.0, *)) {
+        self.view.backgroundColor = [UIColor systemBackgroundColor];
+    }
+    else {
+        self.view.backgroundColor = [UIColor whiteColor];
+    }
     
     topBar = [[UIStackView alloc] init];
     topBar.axis = UILayoutConstraintAxisHorizontal;
@@ -61,6 +66,7 @@ NSString * defaultTitle = @"Select date for data";
     [topBar addArrangedSubview:cancelBtn];
     [topBar addArrangedSubview:titleLabel];
     [topBar addArrangedSubview:doneBtn];
+    topBar.backgroundColor = [UIColor redColor];
     
     datepicker = [[UIDatePicker alloc] initWithFrame:CGRectZero];
     datepicker.datePickerMode = UIDatePickerModeDate;
@@ -71,9 +77,11 @@ NSString * defaultTitle = @"Select date for data";
         datepicker.preferredDatePickerStyle = UIDatePickerStyleWheels;
     }
     
-    [datepicker setValue:[UIColor purpleColor] forKeyPath:@"textColor"];
-    datepicker.backgroundColor = [UIColor systemOrangeColor];
-    [datepicker setValue:[NSNumber numberWithBool:NO] forKeyPath:@"highlightsToday"];
+    if (@available(iOS 13.0, *)) {
+        [datepicker setValue:[UIColor labelColor] forKeyPath:@"textColor"];
+    }
+    
+    [datepicker setValue:[NSNumber numberWithBool:YES] forKeyPath:@"highlightsToday"];
     
     [datepicker addTarget:self action:@selector(dateChanged:)
          forControlEvents:UIControlEventValueChanged];
@@ -110,7 +118,8 @@ NSString * defaultTitle = @"Select date for data";
                                            options:NSStringDrawingUsesLineFragmentOrigin| NSStringDrawingUsesFontLeading
                                         attributes:@{NSFontAttributeName:titleLabel.font}
                                            context:nil];
-    topBar.frame = CGRectMake(0, 0, f.size.width, labelSize.size.height + 20);
+    auto topBarHeight = MAX(labelSize.size.height + 20, 75);
+    topBar.frame = CGRectMake(0, 0, f.size.width, topBarHeight);
     
 //    titleLabel.frame = CGRectMake(0, 0, labelSize.size.width, labelSize.size.height);
     

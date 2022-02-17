@@ -110,6 +110,7 @@ void __ND__DatePicker_setPosition(float x, float y, float width, float height) {
 
 void __ND__DatePicker_popover(long dateUTC) {
     NSDate* date = dateUTC >= 0 ? [NSDate dateWithTimeIntervalSince1970:dateUTC] : [NSDate date];
+    NSLog(@"%@", date);
     [[NDDatepickerBridge sharedInstance] showPopover: date];
 }
 
